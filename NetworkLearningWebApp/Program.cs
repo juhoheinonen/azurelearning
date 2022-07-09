@@ -22,24 +22,35 @@ app.UseHttpsRedirection();
 
 app.MapGet("/customer", async () =>
 {
-    using (var connection = new SqlConnection(config.GetConnectionString("juhohedb")))
+    using (var client = new HttpClient())
     {
-        connection.Open();
+        var result = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, config["Uri"]));
 
-        var command = new SqlCommand("select top 10 customerid, firstname, lastname, emailaddress, companyname from saleslt.customer", connection);
+        var content = await result.Content.ReadAsStringAsync();
 
-        var customers = new List<CustomerViewModel>();
-
-        using (var reader = await command.ExecuteReaderAsync())
-        {
-            while (reader.Read())
-            {
-                customers.Add(new CustomerViewModel(int.Parse(reader[0] == null ? string.Empty : reader[0].ToString()), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
-            }
-        }
+        var customers = System.Text.Json.JsonSerializer.Deserialize<List<CustomerViewModel>>(content);
 
         return customers;
     }
+
+    //using (var connection = new SqlConnection(config.GetConnectionString("juhohedb")))
+    //{
+    //    connection.Open();
+
+    //    var command = new SqlCommand("select top 10 customerid, firstname, lastname, emailaddress, companyname from saleslt.customer", connection);
+
+    //    var customers = new List<CustomerViewModel>();
+
+    //    using (var reader = await command.ExecuteReaderAsync())
+    //    {
+    //        while (reader.Read())
+    //        {
+    //            customers.Add(new CustomerViewModel(int.Parse(reader[0] == null ? string.Empty : reader[0].ToString()), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+    //        }
+    //    }
+
+    //    return customers;
+    //}
 })
 .WithName("GetCustomers");
 
