@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vulnerabilityAssessments_Default_storageContainerPath": {
+            "value": null
+        },
+        "sites_juhohefunc_name": {
+            "value": null
+        },
+        "servers_juhohesql_name": {
+            "value": null
+        },
+        "sites_juhohewebapp_name": {
+            "value": null
+        },
+        "serverfarms_juhoheasp_name": {
+            "value": null
+        },
+        "serverfarms_juhohefuncasp_name": {
+            "value": null
+        },
+        "privateEndpoints_sqlep_name": {
+            "value": null
+        },
+        "privateEndpoints_funcpe_name": {
+            "value": null
+        },
+        "virtualNetworks_juhohevnet_name": {
+            "value": null
+        },
+        "networkInterfaces_funcpe_nic_name": {
+            "value": null
+        },
+        "networkSecurityGroups_nsg_sql_name": {
+            "value": null
+        },
+        "storageAccounts_learningjuhoheinone8da8_name": {
+            "value": null
+        },
+        "privateDnsZones_privatelink_azurewebsites_net_name": {
+            "value": null
+        },
+        "privateDnsZones_privatelink_database_windows_net_name": {
+            "value": null
+        },
+        "smartdetectoralertrules_failure_anomalies___nodejuho_name": {
+            "value": null
+        },
+        "networkInterfaces_sqlep_nic_13e06286_1444_4b21_9163_90bcd2954198_name": {
+            "value": null
+        },
+        "components_nodejuho_externalid": {
+            "value": null
+        },
+        "actiongroups_application_insights_smart_detection_externalid": {
+            "value": null
+        }
+    }
+}

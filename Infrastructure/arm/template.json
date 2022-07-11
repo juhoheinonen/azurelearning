@@ -1,0 +1,1946 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vulnerabilityAssessments_Default_storageContainerPath": {
+            "type": "SecureString"
+        },
+        "sites_juhohefunc_name": {
+            "defaultValue": "juhohefunc",
+            "type": "String"
+        },
+        "servers_juhohesql_name": {
+            "defaultValue": "juhohesql",
+            "type": "String"
+        },
+        "sites_juhohewebapp_name": {
+            "defaultValue": "juhohewebapp",
+            "type": "String"
+        },
+        "serverfarms_juhoheasp_name": {
+            "defaultValue": "juhoheasp",
+            "type": "String"
+        },
+        "serverfarms_juhohefuncasp_name": {
+            "defaultValue": "juhohefuncasp",
+            "type": "String"
+        },
+        "privateEndpoints_sqlep_name": {
+            "defaultValue": "sqlep",
+            "type": "String"
+        },
+        "privateEndpoints_funcpe_name": {
+            "defaultValue": "funcpe",
+            "type": "String"
+        },
+        "virtualNetworks_juhohevnet_name": {
+            "defaultValue": "juhohevnet",
+            "type": "String"
+        },
+        "networkInterfaces_funcpe_nic_name": {
+            "defaultValue": "funcpe-nic",
+            "type": "String"
+        },
+        "networkSecurityGroups_nsg_sql_name": {
+            "defaultValue": "nsg-sql",
+            "type": "String"
+        },
+        "storageAccounts_learningjuhoheinone8da8_name": {
+            "defaultValue": "learningjuhoheinone8da8",
+            "type": "String"
+        },
+        "privateDnsZones_privatelink_azurewebsites_net_name": {
+            "defaultValue": "privatelink.azurewebsites.net",
+            "type": "String"
+        },
+        "privateDnsZones_privatelink_database_windows_net_name": {
+            "defaultValue": "privatelink.database.windows.net",
+            "type": "String"
+        },
+        "smartdetectoralertrules_failure_anomalies___nodejuho_name": {
+            "defaultValue": "failure anomalies - nodejuho",
+            "type": "String"
+        },
+        "networkInterfaces_sqlep_nic_13e06286_1444_4b21_9163_90bcd2954198_name": {
+            "defaultValue": "sqlep.nic.13e06286-1444-4b21-9163-90bcd2954198",
+            "type": "String"
+        },
+        "components_nodejuho_externalid": {
+            "defaultValue": "/subscriptions/45678783-8214-4a06-b674-459fc609b72c/resourceGroups/learning-juho-heinonen/providers/microsoft.insights/components/nodejuho",
+            "type": "String"
+        },
+        "actiongroups_application_insights_smart_detection_externalid": {
+            "defaultValue": "/subscriptions/45678783-8214-4a06-b674-459fc609b72c/resourceGroups/nortal-laas-rg/providers/microsoft.insights/actiongroups/application insights smart detection",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "microsoft.alertsmanagement/smartdetectoralertrules",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('smartdetectoralertrules_failure_anomalies___nodejuho_name')]",
+            "location": "global",
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
+                "state": "Enabled",
+                "severity": "Sev3",
+                "frequency": "PT1M",
+                "detector": {
+                    "id": "FailureAnomaliesDetector"
+                },
+                "scope": [
+                    "[parameters('components_nodejuho_externalid')]"
+                ],
+                "actionGroups": {
+                    "groupIds": [
+                        "[parameters('actiongroups_application_insights_smart_detection_externalid')]"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('networkSecurityGroups_nsg_sql_name')]",
+            "location": "northeurope",
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "2018-09-01",
+            "name": "[parameters('privateDnsZones_privatelink_azurewebsites_net_name')]",
+            "location": "global",
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "maxNumberOfRecordSets": 25000,
+                "maxNumberOfVirtualNetworkLinks": 1000,
+                "maxNumberOfVirtualNetworkLinksWithRegistration": 100,
+                "numberOfRecordSets": 3,
+                "numberOfVirtualNetworkLinks": 0,
+                "numberOfVirtualNetworkLinksWithRegistration": 0,
+                "provisioningState": "Succeeded"
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "2018-09-01",
+            "name": "[parameters('privateDnsZones_privatelink_database_windows_net_name')]",
+            "location": "global",
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "maxNumberOfRecordSets": 25000,
+                "maxNumberOfVirtualNetworkLinks": 1000,
+                "maxNumberOfVirtualNetworkLinksWithRegistration": 100,
+                "numberOfRecordSets": 2,
+                "numberOfVirtualNetworkLinks": 0,
+                "numberOfVirtualNetworkLinksWithRegistration": 0,
+                "provisioningState": "Succeeded"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[parameters('servers_juhohesql_name')]",
+            "location": "northeurope",
+            "tags": {
+                "usage": "learning"
+            },
+            "kind": "v12.0",
+            "properties": {
+                "administratorLogin": "juhohe",
+                "version": "12.0",
+                "publicNetworkAccess": "Disabled",
+                "restrictOutboundNetworkAccess": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-09-01",
+            "name": "[parameters('storageAccounts_learningjuhoheinone8da8_name')]",
+            "location": "northeurope",
+            "tags": {
+                "usage": "learning"
+            },
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": true,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('serverfarms_juhoheasp_name')]",
+            "location": "North Europe",
+            "tags": {
+                "usage": "learning"
+            },
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
+            },
+            "kind": "linux",
+            "properties": {
+                "perSiteScaling": false,
+                "elasticScaleEnabled": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0,
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('serverfarms_juhohefuncasp_name')]",
+            "location": "North Europe",
+            "tags": {
+                "usage": "learning"
+            },
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
+            },
+            "kind": "linux",
+            "properties": {
+                "perSiteScaling": false,
+                "elasticScaleEnabled": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0,
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('networkInterfaces_funcpe_nic_name')]",
+            "location": "northeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'funcep-subnet')]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "privateEndpointIpConfig.3677e08c-bfec-4ac3-963a-221ac9c37726",
+                        "properties": {
+                            "privateIPAddress": "10.5.3.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'funcep-subnet')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('networkInterfaces_sqlep_nic_13e06286_1444_4b21_9163_90bcd2954198_name')]",
+            "location": "northeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'sql-subnet')]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "privateEndpointIpConfig.152352ea-30c5-4247-827a-c9ffad1788c8",
+                        "properties": {
+                            "privateIPAddress": "10.5.0.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'sql-subnet')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/A",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(parameters('privateDnsZones_privatelink_azurewebsites_net_name'), '/juhohefunc')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_azurewebsites_net_name'))]"
+            ],
+            "properties": {
+                "metadata": {
+                    "creator": "created by private endpoint funcpe with resource guid 0f198cad-bb24-4d40-8266-0abf5bf20df1"
+                },
+                "ttl": 10,
+                "aRecords": [
+                    {
+                        "ipv4Address": "10.5.3.4"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/A",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(parameters('privateDnsZones_privatelink_azurewebsites_net_name'), '/juhohefunc.scm')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_azurewebsites_net_name'))]"
+            ],
+            "properties": {
+                "metadata": {
+                    "creator": "created by private endpoint funcpe with resource guid 0f198cad-bb24-4d40-8266-0abf5bf20df1"
+                },
+                "ttl": 10,
+                "aRecords": [
+                    {
+                        "ipv4Address": "10.5.3.4"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/A",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(parameters('privateDnsZones_privatelink_database_windows_net_name'), '/juhohesql')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_database_windows_net_name'))]"
+            ],
+            "properties": {
+                "ttl": 3600,
+                "aRecords": [
+                    {
+                        "ipv4Address": "10.5.0.4"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/SOA",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(parameters('privateDnsZones_privatelink_azurewebsites_net_name'), '/@')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_azurewebsites_net_name'))]"
+            ],
+            "properties": {
+                "ttl": 3600,
+                "soaRecord": {
+                    "email": "azureprivatedns-host.microsoft.com",
+                    "expireTime": 2419200,
+                    "host": "azureprivatedns.net",
+                    "minimumTtl": 10,
+                    "refreshTime": 3600,
+                    "retryTime": 300,
+                    "serialNumber": 1
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/SOA",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(parameters('privateDnsZones_privatelink_database_windows_net_name'), '/@')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_database_windows_net_name'))]"
+            ],
+            "properties": {
+                "ttl": 3600,
+                "soaRecord": {
+                    "email": "azureprivatedns-host.microsoft.com",
+                    "expireTime": 2419200,
+                    "host": "azureprivatedns.net",
+                    "minimumTtl": 10,
+                    "refreshTime": 3600,
+                    "retryTime": 300,
+                    "serialNumber": 1
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('virtualNetworks_juhohevnet_name')]",
+            "location": "northeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_sql_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.5.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "webapp-subnet",
+                        "properties": {
+                            "addressPrefix": "10.5.1.0/24",
+                            "serviceEndpoints": [],
+                            "delegations": [
+                                {
+                                    "name": "delegation",
+                                    "properties": {
+                                        "serviceName": "Microsoft.Web/serverfarms"
+                                    }
+                                }
+                            ],
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "func-subnet",
+                        "properties": {
+                            "addressPrefix": "10.5.2.0/24",
+                            "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "northeurope",
+                                        "westeurope"
+                                    ]
+                                }
+                            ],
+                            "delegations": [
+                                {
+                                    "name": "delegation",
+                                    "properties": {
+                                        "serviceName": "Microsoft.Web/serverfarms"
+                                    }
+                                }
+                            ],
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "funcep-subnet",
+                        "properties": {
+                            "addressPrefix": "10.5.3.0/24",
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "sql-subnet",
+                        "properties": {
+                            "addressPrefix": "10.5.0.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_sql_name'))]"
+                            },
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_juhohevnet_name'), '/funcep-subnet')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_juhohevnet_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.5.3.0/24",
+                "serviceEndpoints": [],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Disabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_juhohevnet_name'), '/func-subnet')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_juhohevnet_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.5.2.0/24",
+                "serviceEndpoints": [
+                    {
+                        "service": "Microsoft.Storage",
+                        "locations": [
+                            "northeurope",
+                            "westeurope"
+                        ]
+                    }
+                ],
+                "delegations": [
+                    {
+                        "name": "delegation",
+                        "properties": {
+                            "serviceName": "Microsoft.Web/serverfarms"
+                        }
+                    }
+                ],
+                "privateEndpointNetworkPolicies": "Disabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_juhohevnet_name'), '/webapp-subnet')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_juhohevnet_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.5.1.0/24",
+                "serviceEndpoints": [],
+                "delegations": [
+                    {
+                        "name": "delegation",
+                        "properties": {
+                            "serviceName": "Microsoft.Web/serverfarms"
+                        }
+                    }
+                ],
+                "privateEndpointNetworkPolicies": "Disabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advancedThreatProtectionSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/CreateIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/Default')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/connectionPolicies",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/default')]",
+            "location": "northeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "connectionType": "Default"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb')]",
+            "location": "northeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "sku": {
+                "name": "GP_S_Gen5",
+                "tier": "GeneralPurpose",
+                "family": "Gen5",
+                "capacity": 1
+            },
+            "kind": "v12.0,user,vcore,serverless",
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 34359738368,
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false,
+                "readScale": "Disabled",
+                "autoPauseDelay": 60,
+                "requestedBackupStorageRedundancy": "Local",
+                "minCapacity": 0.5,
+                "maintenanceConfigurationId": "/subscriptions/45678783-8214-4a06-b674-459fc609b72c/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default",
+                "isLedgerOn": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advancedThreatProtectionSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Default')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Default')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/devOpsAuditingSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/encryptionProtector",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyName": "ServiceManaged",
+                "serverKeyType": "ServiceManaged",
+                "autoRotationEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/extendedAuditingSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/ClientIPAddress_2022-7-9_12-24-28')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/keys",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/ServiceManaged')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyType": "ServiceManaged"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/securityAlertPolicies",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                },
+                "storageContainerPath": "[parameters('vulnerabilityAssessments_Default_storageContainerPath')]"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('storageAccounts_learningjuhoheinone8da8_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_learningjuhoheinone8da8_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "allowPermanentDelete": false,
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('storageAccounts_learningjuhoheinone8da8_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_learningjuhoheinone8da8_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "protocolSettings": {
+                    "smb": {}
+                },
+                "cors": {
+                    "corsRules": []
+                },
+                "shareDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('storageAccounts_learningjuhoheinone8da8_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_learningjuhoheinone8da8_name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/tableServices",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('storageAccounts_learningjuhoheinone8da8_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_learningjuhoheinone8da8_name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/ftp')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/ftp')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/scm')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/scm')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/web')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "linuxFxVersion": "DOTNET|6.0",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2019",
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$juhohefunc",
+                "scmType": "None",
+                "use32BitWorkerProcess": false,
+                "webSocketsEnabled": false,
+                "alwaysOn": true,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": true
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetName": "656de616-b3c5-41fd-9bbe-d3758e9ac458_func-subnet",
+                "vnetRouteAllEnabled": true,
+                "vnetPrivatePortsCount": 0,
+                "cors": {
+                    "allowedOrigins": [
+                        "https://portal.azure.com"
+                    ],
+                    "supportCredentials": false
+                },
+                "localMySqlEnabled": false,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "functionAppScaleLimit": 0,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "minimumElasticInstanceCount": 0,
+                "azureStorageAccounts": {}
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/web')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "linuxFxVersion": "DOTNETCORE|6.0",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2019",
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$juhohewebapp",
+                "scmType": "None",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": true,
+                "appCommandLine": "dotnet NetworkLearningWebApp.dll",
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": true
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetName": "656de616-b3c5-41fd-9bbe-d3758e9ac458_webapp-subnet",
+                "vnetRouteAllEnabled": true,
+                "vnetPrivatePortsCount": 0,
+                "localMySqlEnabled": false,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "functionAppScaleLimit": 0,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "minimumElasticInstanceCount": 0,
+                "azureStorageAccounts": {}
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/2277102c-1df4-40a0-a7fc-058d0b119493')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "Push-Deployer",
+                "message": "Created via a push deployment",
+                "start_time": "2022-07-09T10:03:54.5280012Z",
+                "end_time": "2022-07-09T10:04:01.4046806Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/248f2dcc-29ab-425d-8683-204a49e3f850')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "Push-Deployer",
+                "message": "Created via a push deployment",
+                "start_time": "2022-07-09T09:34:00.1836693Z",
+                "end_time": "2022-07-09T09:34:03.1120116Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/2f5d8059-2073-4676-af98-3bc0c3764923')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "Push-Deployer",
+                "message": "Created via a push deployment",
+                "start_time": "2022-07-09T10:53:18.1474015Z",
+                "end_time": "2022-07-09T10:53:20.8763855Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/functions",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/GetCustomers')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ],
+            "properties": {
+                "script_root_path_href": "https://juhohefunc.azurewebsites.net/admin/vfs/home/site/wwwroot/GetCustomers/",
+                "script_href": "https://juhohefunc.azurewebsites.net/admin/vfs/home/site/wwwroot/bin/NetworkLearningFuncApp.dll",
+                "config_href": "https://juhohefunc.azurewebsites.net/admin/vfs/home/site/wwwroot/GetCustomers/function.json",
+                "test_data_href": "https://juhohefunc.azurewebsites.net/admin/vfs/home/data/Functions/sampledata/GetCustomers.dat",
+                "href": "https://juhohefunc.azurewebsites.net/admin/functions/GetCustomers",
+                "config": {},
+                "invoke_url_template": "https://juhohefunc.azurewebsites.net/api/getcustomers",
+                "language": "DotNetAssembly",
+                "isDisabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/', parameters('sites_juhohefunc_name'), '.azurewebsites.net')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ],
+            "properties": {
+                "siteName": "juhohefunc",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/', parameters('sites_juhohewebapp_name'), '.azurewebsites.net')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]"
+            ],
+            "properties": {
+                "siteName": "juhohewebapp",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/privateEndpointConnections",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/funcpe-833a69d6-a045-4d7d-83d2-c1819b97479f')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ],
+            "properties": {
+                "privateLinkServiceConnectionState": {
+                    "status": "Approved",
+                    "actionsRequired": "None"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/2022-07-09T10_11_13_0522519')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/2022-07-09T10_11_13_0522519')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/2022-07-09T11_11_13_0977530')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/snapshots",
+            "apiVersion": "2015-08-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/2022-07-09T11_11_13_0977530')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(parameters('privateDnsZones_privatelink_azurewebsites_net_name'), '/5szzv55wqcd5c')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_azurewebsites_net_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_juhohevnet_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_juhohevnet_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(parameters('privateDnsZones_privatelink_database_windows_net_name'), '/5szzv55wqcd5c')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_database_windows_net_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_juhohevnet_name'))]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_juhohevnet_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('privateEndpoints_funcpe_name')]",
+            "location": "northeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'funcep-subnet')]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpoints_funcpe_name')]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]",
+                            "groupIds": [
+                                "sites"
+                            ],
+                            "privateLinkServiceConnectionState": {
+                                "status": "Approved",
+                                "actionsRequired": "None"
+                            }
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "subnet": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'funcep-subnet')]"
+                },
+                "customDnsConfigs": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('privateEndpoints_sqlep_name')]",
+            "location": "northeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'sql-subnet')]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpoints_sqlep_name')]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]",
+                            "groupIds": [
+                                "SqlServer"
+                            ],
+                            "privateLinkServiceConnectionState": {
+                                "status": "Approved",
+                                "description": "Auto-approved",
+                                "actionsRequired": "None"
+                            }
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "subnet": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'sql-subnet')]"
+                },
+                "customDnsConfigs": [
+                    {
+                        "fqdn": "juhohesql.database.windows.net",
+                        "ipAddresses": [
+                            "10.5.0.4"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('privateEndpoints_funcpe_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_funcpe_name'))]",
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_azurewebsites_net_name'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "privatelink-azurewebsites-net",
+                        "properties": {
+                            "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZones_privatelink_azurewebsites_net_name'))]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_juhohevnet_name'), '/sql-subnet')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_juhohevnet_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_sql_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.5.0.0/24",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_sql_name'))]"
+                },
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Disabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advancedThreatProtectionSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/CreateIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Default')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "weeklyRetention": "PT0S",
+                "monthlyRetention": "PT0S",
+                "yearlyRetention": "PT0S",
+                "weekOfYear": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 7,
+                "diffBackupIntervalInHours": 12
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Default')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/juhohedb/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_juhohesql_name'), 'juhohedb')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/privateEndpointConnections",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('servers_juhohesql_name'), '/sqlep-19a8a04d-8d44-4c90-a592-267d67155420')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_juhohesql_name'))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_sqlep_name'))]"
+            ],
+            "properties": {
+                "privateEndpoint": {
+                    "id": "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_sqlep_name'))]"
+                },
+                "privateLinkServiceConnectionState": {
+                    "status": "Approved",
+                    "description": "Auto-approved"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('storageAccounts_learningjuhoheinone8da8_name'), '/default/azure-webjobs-hosts')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_learningjuhoheinone8da8_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_learningjuhoheinone8da8_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(parameters('storageAccounts_learningjuhoheinone8da8_name'), '/default/azure-webjobs-secrets')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_learningjuhoheinone8da8_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_learningjuhoheinone8da8_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('sites_juhohefunc_name')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_juhohefuncasp_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'func-subnet')]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "kind": "functionapp,linux",
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_juhohefunc_name'), '.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('sites_juhohefunc_name'), '.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_juhohefuncasp_name'))]",
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "linuxFxVersion": "DOTNET|6.0",
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": true,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 0,
+                    "minimumElasticInstanceCount": 0
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "customDomainVerificationId": "803B8A540D091F7A5478E4B946EC8FC95A47A652996612AF39862A3917FEADEA",
+                "containerSize": 1536,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": true,
+                "redundancyMode": "None",
+                "storageAccountRequired": false,
+                "virtualNetworkSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'func-subnet')]",
+                "keyVaultReferenceIdentity": "SystemAssigned"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('sites_juhohewebapp_name')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_juhoheasp_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'webapp-subnet')]"
+            ],
+            "tags": {
+                "usage": "learning"
+            },
+            "kind": "app,linux",
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_juhohewebapp_name'), '.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('sites_juhohewebapp_name'), '.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_juhoheasp_name'))]",
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "linuxFxVersion": "DOTNETCORE|6.0",
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": true,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 0,
+                    "minimumElasticInstanceCount": 0
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "customDomainVerificationId": "803B8A540D091F7A5478E4B946EC8FC95A47A652996612AF39862A3917FEADEA",
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": true,
+                "redundancyMode": "None",
+                "storageAccountRequired": false,
+                "virtualNetworkSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'webapp-subnet')]",
+                "keyVaultReferenceIdentity": "SystemAssigned"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/virtualNetworkConnections",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohefunc_name'), '/656de616-b3c5-41fd-9bbe-d3758e9ac458_func-subnet')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohefunc_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'func-subnet')]"
+            ],
+            "properties": {
+                "vnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'func-subnet')]",
+                "isSwift": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/virtualNetworkConnections",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_juhohewebapp_name'), '/656de616-b3c5-41fd-9bbe-d3758e9ac458_webapp-subnet')]",
+            "location": "North Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_juhohewebapp_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'webapp-subnet')]"
+            ],
+            "properties": {
+                "vnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_juhohevnet_name'), 'webapp-subnet')]",
+                "isSwift": true
+            }
+        }
+    ]
+}
