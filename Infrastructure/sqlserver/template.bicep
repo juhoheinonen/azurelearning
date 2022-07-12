@@ -31,7 +31,6 @@ resource juhohedb 'Microsoft.Sql/servers/databases@2017-10-01-preview' = {
     catalogCollation: 'SQL_Latin1_General_CP1_CI_AS'
     collation: 'SQL_Latin1_General_CP1_CI_AS'
     createMode: 'Default'
-    longTermRetentionBackupResourceId: 'string'
     maxSizeBytes: 34359738368
     minCapacity: json('0.5')
     readScale: 'Disabled'
