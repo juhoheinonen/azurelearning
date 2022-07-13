@@ -4,7 +4,7 @@ param location string = 'northeurope'
 @secure()
 param password string
 
-resource servers_juhohesql_name_resource 'Microsoft.Sql/servers@2021-11-01-preview' = {
+resource juhohesql 'Microsoft.Sql/servers@2021-11-01-preview' = {
   name: servers_juhohesql_name
   location: location
   properties: {
@@ -25,7 +25,7 @@ resource juhohedb 'Microsoft.Sql/servers/databases@2017-10-01-preview' = {
     name: 'GP_S_Gen5'
     tier: 'GeneralPurpose'
   }
-  parent: servers_juhohesql_name_resource
+  parent: juhohesql
   properties: {
     autoPauseDelay: 60
     catalogCollation: 'SQL_Latin1_General_CP1_CI_AS'
@@ -36,5 +36,29 @@ resource juhohedb 'Microsoft.Sql/servers/databases@2017-10-01-preview' = {
     readScale: 'Disabled'
     sampleName: 'AdventureWorksLT'
     zoneRedundant: false
+  }
+}
+
+resource juhoheWebAppPlan 'Microsoft.Web/serverfarms@2020-06-01' = {
+  name: 'juhohewebappplan'
+  location: location
+  properties: {
+    reserved: true
+  }
+  sku: {
+    tier: 'Standard'
+    name: 'S1'
+  }
+  kind: 'linux'
+}
+
+resource juhoheWebApp 'Microsoft.Web/sites@2022-03-01' = {
+  name: 'juhohewebapp'
+  location: location
+  properties: {
+    serverFarmId: juhoheWebAppPlan.id
+    siteConfig: {
+      linuxFxVersion: 'DOTNETCORE|6.0'
+    }
   }
 }
