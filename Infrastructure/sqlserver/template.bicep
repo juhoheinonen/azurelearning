@@ -75,14 +75,11 @@ resource juhoheFuncAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-
 resource juhoheFuncAppPlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: 'juhohefuncappplan'
   location: location
-  properties: {
-    reserved: true
-  }
   sku: {
     tier: 'Standard'
     name: 'S1'
   }
-  kind: 'linux'
+  properties: {}
 }
 
 resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
