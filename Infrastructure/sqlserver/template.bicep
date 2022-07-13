@@ -144,6 +144,12 @@ resource juhohe1VirtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = 
           addressPrefix: '10.0.0.0/24'
         }
       }
+      {
+        name: 'pe1subnet'
+        properties: {
+          addressPrefix: '10.0.1.0/24'
+        }
+      }
     ]
   }
 }
