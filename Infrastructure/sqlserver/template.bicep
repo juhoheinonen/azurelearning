@@ -95,32 +95,32 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   properties: {
     serverFarmId: juhoheFuncAppPlan.id
     siteConfig: {
-      appSettings: [
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${juhoheFuncAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${juhoheFuncAppStorageAccount.listKeys().keys[0].value}'
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${juhoheFuncAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${juhoheFuncAppStorageAccount.listKeys().keys[0].value}'
-        }
-        {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: toLower('juhohefuncapp')
-        }
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~2'
-        }
-        {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~10'
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet'
-        }
-      ]
+      // appSettings: [
+      //   {
+      //     name: 'AzureWebJobsStorage'
+      //     value: 'DefaultEndpointsProtocol=https;AccountName=${juhoheFuncAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${juhoheFuncAppStorageAccount.listKeys().keys[0].value}'
+      //   }
+      //   {
+      //     name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+      //     value: 'DefaultEndpointsProtocol=https;AccountName=${juhoheFuncAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${juhoheFuncAppStorageAccount.listKeys().keys[0].value}'
+      //   }
+      //   {
+      //     name: 'WEBSITE_CONTENTSHARE'
+      //     value: toLower('juhohefuncapp')
+      //   }
+      //   {
+      //     name: 'FUNCTIONS_EXTENSION_VERSION'
+      //     value: '~2'
+      //   }
+      //   {
+      //     name: 'WEBSITE_NODE_DEFAULT_VERSION'
+      //     value: '~10'
+      //   }
+      //   {
+      //     name: 'FUNCTIONS_WORKER_RUNTIME'
+      //     value: 'dotnet'
+      //   }
+      // ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     }
@@ -134,20 +134,20 @@ resource juhohe1VirtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = 
   properties: {
     addressSpace: {
       addressPrefixes: [
-        '10.0.0.0/16'
+        '10.1.0.0/16'
       ]
     }
     subnets: [
       {
         name: 'webappsubnet'
         properties: {
-          addressPrefix: '10.0.0.0/24'
+          addressPrefix: '10.1.2.0/24'
         }
       }
       {
-        name: 'pe1subnet'
+        name: 'PrivateLinkSubnet'
         properties: {
-          addressPrefix: '10.0.1.0/24'
+          addressPrefix: '10.1.2.0/24'
         }
       }
     ]
