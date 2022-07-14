@@ -141,7 +141,7 @@ resource juhohe1VirtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = 
       {
         name: 'webappsubnet'
         properties: {
-          addressPrefix: '10.1.2.0/24'
+          addressPrefix: '10.1.1.0/24'
         }
       }
       {
