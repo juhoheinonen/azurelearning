@@ -19,7 +19,7 @@ namespace NetworkLearningFuncApp
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            using (var connection = new SqlConnection(Environment.GetEnvironmentVariable("juhohedb")))
+            using (var connection = new SqlConnection(Environment.GetEnvironmentVariable("JuhoheDb")))
             {
                 connection.Open();
 
