@@ -39,29 +39,29 @@ resource juhohedb 'Microsoft.Sql/servers/databases@2017-10-01-preview' = {
   }
 }
 
-resource juhoheWebAppPlan 'Microsoft.Web/serverfarms@2020-06-01' = {
-  name: 'juhohewebappplan'
-  location: location
-  properties: {
-    reserved: true
-  }
-  sku: {
-    tier: 'Standard'
-    name: 'S1'
-  }
-  kind: 'linux'
-}
+// resource juhoheWebAppPlan 'Microsoft.Web/serverfarms@2020-06-01' = {
+//   name: 'juhohewebappplan'
+//   location: location
+//   properties: {
+//     reserved: true
+//   }
+//   sku: {
+//     tier: 'Standard'
+//     name: 'S1'
+//   }
+//   kind: 'linux'
+// }
 
-resource juhoheWebApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: 'juhohewebapp'
-  location: location
-  properties: {
-    serverFarmId: juhoheWebAppPlan.id
-    siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|6.0'
-    }
-  }
-}
+// resource juhoheWebApp 'Microsoft.Web/sites@2022-03-01' = {
+//   name: 'juhohewebapp'
+//   location: location
+//   properties: {
+//     serverFarmId: juhoheWebAppPlan.id
+//     siteConfig: {
+//       linuxFxVersion: 'DOTNETCORE|6.0'
+//     }
+//   }
+// }
 
 resource juhoheFuncAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: 'juhohefuncappsa'
@@ -95,32 +95,32 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   properties: {
     serverFarmId: juhoheFuncAppPlan.id
     siteConfig: {
-      // appSettings: [
-      //   {
-      //     name: 'AzureWebJobsStorage'
-      //     value: 'DefaultEndpointsProtocol=https;AccountName=${juhoheFuncAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${juhoheFuncAppStorageAccount.listKeys().keys[0].value}'
-      //   }
-      //   {
-      //     name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-      //     value: 'DefaultEndpointsProtocol=https;AccountName=${juhoheFuncAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${juhoheFuncAppStorageAccount.listKeys().keys[0].value}'
-      //   }
-      //   {
-      //     name: 'WEBSITE_CONTENTSHARE'
-      //     value: toLower('juhohefuncapp')
-      //   }
-      //   {
-      //     name: 'FUNCTIONS_EXTENSION_VERSION'
-      //     value: '~2'
-      //   }
-      //   {
-      //     name: 'WEBSITE_NODE_DEFAULT_VERSION'
-      //     value: '~10'
-      //   }
-      //   {
-      //     name: 'FUNCTIONS_WORKER_RUNTIME'
-      //     value: 'dotnet'
-      //   }
-      // ]
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${juhoheFuncAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${juhoheFuncAppStorageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${juhoheFuncAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${juhoheFuncAppStorageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: toLower('juhohefuncapp')
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~2'
+        }
+        {
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '~10'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'dotnet'
+        }
+      ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     }
