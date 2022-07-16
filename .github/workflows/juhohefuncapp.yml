@@ -28,7 +28,7 @@ jobs:
       uses: Azure/functions-action@v1
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        publish-profile: ${{ secrets.juhohefuncapp_da64 }}
+        publish-profile: ${{ secrets.JUHOHEFUNCAPP_4489 }}
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
     - name: App Settings Variable Substitution
       uses: microsoft/variable-substitution@v1      
