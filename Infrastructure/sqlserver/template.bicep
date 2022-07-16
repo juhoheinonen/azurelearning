@@ -72,6 +72,16 @@ resource juhoheFuncAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-
   kind: 'Storage'
 }
 
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: 'juhoheai'
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Request_Source: 'rest'
+  }
+}
+
 resource juhoheFuncAppPlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: 'juhohefuncappplan'
   location: location
@@ -119,6 +129,10 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: 'dotnet'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.properties.InstrumentationKey
         }
       ]
       ftpsState: 'FtpsOnly'
