@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkLearningWebApp", "NetworkLearningWebApp\NetworkLearningWebApp.csproj", "{C516BC6C-E697-4433-BF18-D122252B7EB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkLearningWebApp", "NetworkLearningWebApp\NetworkLearningWebApp.csproj", "{C516BC6C-E697-4433-BF18-D122252B7EB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkLearningFuncApp", "NetworkLearningFuncApp\NetworkLearningFuncApp.csproj", "{068B17E7-B18D-4568-8721-A77F34168D44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkLearningFuncApp", "NetworkLearningFuncApp\NetworkLearningFuncApp.csproj", "{068B17E7-B18D-4568-8721-A77F34168D44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
