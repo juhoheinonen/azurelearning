@@ -10,6 +10,7 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 6.0.x
   WORKING_DIRECTORY: NetworkLearningFuncApp
+  JuhoheDb: ${{ secrets.juhohedbconnstring }}
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -30,8 +31,5 @@ jobs:
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
         publish-profile: ${{ secrets.JUHOHEFUNCAPP_4489 }}
-        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-    - name: App Settings Variable Substitution
-      uses: microsoft/variable-substitution@v1      
-      env:        
-        JuhoheDb: ${{ secrets.juhohedbconnstring }}
+        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}          
+        
