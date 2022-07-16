@@ -120,7 +120,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~2'
+          value: '~4'
         }
         {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'
@@ -142,28 +142,28 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-resource juhohe1VirtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
-  name: 'juhohe1vnet'
-  location: location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        '10.1.0.0/16'
-      ]
-    }
-    subnets: [
-      {
-        name: 'webappsubnet'
-        properties: {
-          addressPrefix: '10.1.1.0/24'
-        }
-      }
-      {
-        name: 'PrivateLinkSubnet'
-        properties: {
-          addressPrefix: '10.1.2.0/24'
-        }
-      }
-    ]
-  }
-}
+// resource juhohe1VirtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
+//   name: 'juhohe1vnet'
+//   location: location
+//   properties: {
+//     addressSpace: {
+//       addressPrefixes: [
+//         '10.1.0.0/16'
+//       ]
+//     }
+//     subnets: [
+//       {
+//         name: 'webappsubnet'
+//         properties: {
+//           addressPrefix: '10.1.1.0/24'
+//         }
+//       }
+//       {
+//         name: 'PrivateLinkSubnet'
+//         properties: {
+//           addressPrefix: '10.1.2.0/24'
+//         }
+//       }
+//     ]
+//   }
+// }
